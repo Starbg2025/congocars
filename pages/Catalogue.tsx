@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Search, SlidersHorizontal, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -25,7 +24,6 @@ const Catalogue: React.FC = () => {
     
     if (!error && data) {
       setCars(data);
-      // Fixed: Explicitly cast uniqueBrands as string[] to satisfy setBrands state
       const uniqueBrands = Array.from(new Set(data.map(c => (c as any).brand))) as string[];
       setBrands(uniqueBrands);
     }
@@ -86,7 +84,7 @@ const Catalogue: React.FC = () => {
               >
                 <div className="aspect-[16/10] relative overflow-hidden">
                   <img 
-                    src={car.image || `https://picsum.photos/800/600?random=${car.id}`} 
+                    src={car.image} 
                     alt={car.brand} 
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   />

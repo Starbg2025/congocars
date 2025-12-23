@@ -1,8 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-// Added ChevronRight to the lucide-react imports
-import { Calendar, Tag, Info, CheckCircle, AlertCircle, Fuel, Settings, Gauge, ChevronRight } from 'lucide-react';
+import { Tag, Info, CheckCircle, AlertCircle, Fuel, Gauge, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Car } from '../types';
 
@@ -110,26 +108,16 @@ const CarDetails: React.FC = () => {
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Photos */}
           <div className="space-y-6">
             <div className="rounded-[40px] overflow-hidden aspect-video bg-white border border-slate-200 shadow-xl">
               <img 
                 src={car.image} 
                 alt={`${car.brand} ${car.model}`} 
                 className="w-full h-full object-cover"
-                onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200'; }}
               />
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="aspect-square rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm hover:border-red-600 transition cursor-pointer">
-                  <img src={`https://picsum.photos/400/400?random=${car.id}${i}`} className="w-full h-full object-cover opacity-50 hover:opacity-100 transition" />
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* Info */}
           <div className="text-slate-900">
             <div className="mb-10">
               <div className="flex items-center space-x-2 text-red-600 font-bold uppercase tracking-widest text-sm mb-4">
@@ -155,14 +143,14 @@ const CarDetails: React.FC = () => {
                   <div className="bg-red-50 p-3 rounded-2xl text-red-600"><Gauge size={24} /></div>
                   <div>
                     <p className="text-xs font-bold text-slate-400 uppercase">État</p>
-                    <p className="font-bold text-slate-900">Occasion / Neuf</p>
+                    <p className="font-bold text-slate-900">Excellent</p>
                   </div>
                </div>
                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-4">
                   <div className="bg-red-50 p-3 rounded-2xl text-red-600"><Fuel size={24} /></div>
                   <div>
                     <p className="text-xs font-bold text-slate-400 uppercase">Carburant</p>
-                    <p className="font-bold text-slate-900">Essence/Diesel</p>
+                    <p className="font-bold text-slate-900">Standard</p>
                   </div>
                </div>
             </div>
@@ -193,7 +181,6 @@ const CarDetails: React.FC = () => {
         </div>
       </div>
 
-      {/* Reservation Modal */}
       {isReserving && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
           <div className="bg-white rounded-[40px] w-full max-w-2xl p-10 relative shadow-2xl border border-slate-200">
