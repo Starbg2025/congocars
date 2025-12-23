@@ -4,13 +4,13 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stage, Float, MeshReflectorMaterial, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Bypassing TS intrinsic element checks for @react-three/fiber host elements
-const group = 'group' as any;
-const mesh = 'mesh' as any;
-const boxGeometry = 'boxGeometry' as any;
-const meshStandardMaterial = 'meshStandardMaterial' as any;
-const cylinderGeometry = 'cylinderGeometry' as any;
-const sphereGeometry = 'sphereGeometry' as any;
+// Bypassing TS intrinsic element checks for @react-three/fiber host elements by using capitalized variables
+const Group = 'group' as any;
+const Mesh = 'mesh' as any;
+const BoxGeometry = 'boxGeometry' as any;
+const MeshStandardMaterial = 'meshStandardMaterial' as any;
+const CylinderGeometry = 'cylinderGeometry' as any;
+const SphereGeometry = 'sphereGeometry' as any;
 
 const FloatingCarModel = () => {
   const meshRef = useRef<THREE.Group>(null);
@@ -23,35 +23,35 @@ const FloatingCarModel = () => {
   });
 
   return (
-    <group ref={meshRef}>
+    <Group ref={meshRef}>
       {/* Abstract Representation of a Car for 3D visual interest */}
-      <mesh position={[0, 0.5, 0]}>
-        <boxGeometry args={[4, 1, 2]} />
-        <meshStandardMaterial color="#333" metalness={0.9} roughness={0.1} />
-      </mesh>
-      <mesh position={[1, 1.2, 0]}>
-        <boxGeometry args={[2, 0.5, 1.8]} />
-        <meshStandardMaterial color="#111" metalness={1} roughness={0} />
-      </mesh>
+      <Mesh position={[0, 0.5, 0]}>
+        <BoxGeometry args={[4, 1, 2]} />
+        <MeshStandardMaterial color="#333" metalness={0.9} roughness={0.1} />
+      </Mesh>
+      <Mesh position={[1, 1.2, 0]}>
+        <BoxGeometry args={[2, 0.5, 1.8]} />
+        <MeshStandardMaterial color="#111" metalness={1} roughness={0} />
+      </Mesh>
       {/* Wheels */}
       {[-1.5, 1.5].map((x) => 
         [-0.9, 0.9].map((z) => (
-          <mesh key={`${x}-${z}`} position={[x, 0.2, z]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.4, 0.4, 0.3, 32]} />
-            <meshStandardMaterial color="#050505" />
-          </mesh>
+          <Mesh key={`${x}-${z}`} position={[x, 0.2, z]} rotation={[Math.PI / 2, 0, 0]}>
+            <CylinderGeometry args={[0.4, 0.4, 0.3, 32]} />
+            <MeshStandardMaterial color="#050505" />
+          </Mesh>
         ))
       )}
       {/* Lights */}
-      <mesh position={[2, 0.7, 0.7]}>
-        <sphereGeometry args={[0.1, 16, 16]} />
-        <meshStandardMaterial color="white" emissive="white" emissiveIntensity={2} />
-      </mesh>
-      <mesh position={[2, 0.7, -0.7]}>
-        <sphereGeometry args={[0.1, 16, 16]} />
-        <meshStandardMaterial color="white" emissive="white" emissiveIntensity={2} />
-      </mesh>
-    </group>
+      <Mesh position={[2, 0.7, 0.7]}>
+        <SphereGeometry args={[0.1, 16, 16]} />
+        <MeshStandardMaterial color="white" emissive="white" emissiveIntensity={2} />
+      </Mesh>
+      <Mesh position={[2, 0.7, -0.7]}>
+        <SphereGeometry args={[0.1, 16, 16]} />
+        <MeshStandardMaterial color="white" emissive="white" emissiveIntensity={2} />
+      </Mesh>
+    </Group>
   );
 };
 
