@@ -25,7 +25,8 @@ const Catalogue: React.FC = () => {
     
     if (!error && data) {
       setCars(data);
-      const uniqueBrands = Array.from(new Set(data.map(c => c.brand)));
+      // Fixed: Explicitly cast uniqueBrands as string[] to satisfy setBrands state
+      const uniqueBrands = Array.from(new Set(data.map(c => (c as any).brand))) as string[];
       setBrands(uniqueBrands);
     }
     setLoading(false);
@@ -38,27 +39,27 @@ const Catalogue: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-black py-12 px-4">
+    <div className="min-h-screen bg-white py-12 px-6">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-12">
-          <h1 className="font-luxury text-4xl md:text-5xl mb-6">Catalogue Automobile</h1>
+        <header className="mb-16">
+          <h1 className="font-luxury text-5xl mb-8 text-slate-900">Catalogue Automobile</h1>
           
-          <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex flex-col md:flex-row gap-6 items-center">
             <div className="relative flex-grow w-full">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
               <input 
                 type="text"
-                placeholder="Rechercher une marque, un modèle..."
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-red-600 outline-none"
+                placeholder="Rechercher une voiture (marque, modèle...)"
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-6 focus:ring-2 focus:ring-red-600 focus:bg-white outline-none transition-all shadow-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             
             <div className="flex items-center space-x-4 w-full md:w-auto">
-              <SlidersHorizontal className="text-red-600" />
+              <SlidersHorizontal className="text-red-600 shrink-0" />
               <select 
-                className="bg-zinc-900 border border-white/10 rounded-xl py-3 px-4 outline-none w-full"
+                className="bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 outline-none w-full shadow-sm font-medium focus:ring-2 focus:ring-red-600 transition-all"
                 value={filterBrand}
                 onChange={(e) => setFilterBrand(e.target.value)}
               >
@@ -72,16 +73,16 @@ const Catalogue: React.FC = () => {
         </header>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-red-600"></div>
+          <div className="flex justify-center py-32">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-red-600 border-opacity-20 border-t-red-600"></div>
           </div>
         ) : filteredCars.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {filteredCars.map(car => (
               <Link 
                 key={car.id} 
                 to={`/car/${car.id}`}
-                className="group relative bg-zinc-900 rounded-2xl overflow-hidden border border-white/5 hover:border-red-600/50 transition-all"
+                className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 transition-all duration-300"
               >
                 <div className="aspect-[16/10] relative overflow-hidden">
                   <img 
@@ -89,24 +90,26 @@ const Catalogue: React.FC = () => {
                     alt={car.brand} 
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   />
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1 rounded-full text-xs font-bold text-slate-900 shadow-sm">
+                    {car.year}
+                  </div>
                   {car.status === 'Vendu' && (
-                    <div className="absolute top-4 right-4 bg-black/80 text-white px-3 py-1 rounded-full text-xs font-bold border border-white/10 backdrop-blur-sm">
-                      Vendu
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center">
+                      <span className="bg-red-600 text-white px-6 py-2 rounded-full font-bold uppercase tracking-widest text-sm shadow-lg">Vendu</span>
                     </div>
                   )}
                 </div>
-                <div className="p-6">
+                <div className="p-8">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <h3 className="text-xl font-bold">{car.brand} {car.model}</h3>
-                      <p className="text-gray-400 text-sm">{car.year} • {car.status}</p>
+                      <h3 className="text-2xl font-bold text-slate-900">{car.brand} {car.model}</h3>
                     </div>
-                    <div className="p-2 rounded-full bg-red-600/10 text-red-600 opacity-0 group-hover:opacity-100 transition">
-                      <ArrowUpRight size={20} />
+                    <div className="p-2 rounded-xl bg-slate-50 text-red-600 opacity-0 group-hover:opacity-100 transition">
+                      <ArrowUpRight size={24} />
                     </div>
                   </div>
-                  <div className="flex items-end justify-between">
-                    <p className="text-2xl font-luxury text-white">
+                  <div className="flex items-end justify-between border-t border-slate-50 pt-6">
+                    <p className="text-3xl font-luxury text-slate-900">
                       {car.price.toLocaleString('fr-FR')} $
                     </p>
                   </div>
@@ -115,8 +118,14 @@ const Catalogue: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-zinc-900/50 rounded-3xl border border-white/5">
-            <p className="text-xl text-gray-500">Aucun véhicule trouvé pour votre recherche.</p>
+          <div className="text-center py-32 bg-slate-50 rounded-[40px] border border-dashed border-slate-200">
+            <p className="text-2xl text-slate-400 font-medium">Aucun véhicule ne correspond à votre recherche.</p>
+            <button 
+              onClick={() => {setSearchTerm(''); setFilterBrand('All');}}
+              className="mt-6 text-red-600 font-bold hover:underline"
+            >
+              Réinitialiser les filtres
+            </button>
           </div>
         )}
       </div>

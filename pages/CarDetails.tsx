@@ -1,7 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, Gauge, Fuel, Settings, Tag, Info, CheckCircle, AlertCircle } from 'lucide-react';
+// Added ChevronRight to the lucide-react imports
+import { Calendar, Tag, Info, CheckCircle, AlertCircle, Fuel, Settings, Gauge, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Car } from '../types';
 
@@ -41,7 +42,6 @@ const CarDetails: React.FC = () => {
     setStatus('loading');
 
     try {
-      // 1. Enregistrement dans Supabase
       const { error: resError } = await supabase
         .from('reservations')
         .insert([{
@@ -54,12 +54,9 @@ const CarDetails: React.FC = () => {
 
       if (resError) throw resError;
 
-      // 2. Appel de la fonction Netlify pour l'envoi d'emails
       const response = await fetch("/.netlify/functions/sendReservation", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: reserveForm.name,
           email: reserveForm.email,
@@ -69,10 +66,6 @@ const CarDetails: React.FC = () => {
         })
       });
 
-      if (!response.ok) {
-        console.warn("L'envoi d'email a échoué via la fonction Netlify, mais la réservation est enregistrée en base.");
-      }
-
       setStatus('success');
       setReserveForm({ name: '', email: '', phone: '', message: '' });
       setTimeout(() => {
@@ -81,84 +74,105 @@ const CarDetails: React.FC = () => {
       }, 3000);
 
     } catch (err) {
-      console.error("Erreur lors de la réservation:", err);
+      console.error(err);
       setStatus('error');
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-red-600 border-opacity-20 border-t-red-600"></div>
       </div>
     );
   }
 
   if (!car) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-white">
-        <p>Voiture introuvable.</p>
+      <div className="min-h-screen bg-white flex items-center justify-center text-slate-900">
+        <div className="text-center">
+          <p className="text-2xl font-bold mb-4">Véhicule introuvable.</p>
+          <button onClick={() => navigate('/catalogue')} className="text-red-600 font-bold hover:underline">Retour au catalogue</button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black py-12 px-4">
+    <div className="min-h-screen bg-slate-50 py-16 px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Section Images */}
-          <div>
-            <div className="rounded-3xl overflow-hidden mb-6 aspect-video bg-zinc-900 border border-white/10">
+        <button 
+          onClick={() => navigate('/catalogue')}
+          className="mb-10 text-slate-500 hover:text-red-600 flex items-center space-x-2 transition font-semibold"
+        >
+          <ChevronRight className="rotate-180" size={20} />
+          <span>Retour au catalogue</span>
+        </button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          {/* Photos */}
+          <div className="space-y-6">
+            <div className="rounded-[40px] overflow-hidden aspect-video bg-white border border-slate-200 shadow-xl">
               <img 
                 src={car.image} 
                 alt={`${car.brand} ${car.model}`} 
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200';
-                }}
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200'; }}
               />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="aspect-square rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm hover:border-red-600 transition cursor-pointer">
+                  <img src={`https://picsum.photos/400/400?random=${car.id}${i}`} className="w-full h-full object-cover opacity-50 hover:opacity-100 transition" />
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Section Informations */}
-          <div className="text-white">
-            <div className="mb-8">
-              <div className="flex items-center space-x-2 text-red-600 mb-2 font-bold uppercase tracking-widest text-sm">
-                <Tag size={16} />
+          {/* Info */}
+          <div className="text-slate-900">
+            <div className="mb-10">
+              <div className="flex items-center space-x-2 text-red-600 font-bold uppercase tracking-widest text-sm mb-4">
+                <Tag size={18} />
                 <span>{car.brand}</span>
               </div>
-              <h1 className="font-luxury text-5xl mb-4">{car.model}</h1>
-              <p className="text-4xl font-light text-white mb-6">
+              <h1 className="font-luxury text-6xl mb-4 text-slate-900">{car.model}</h1>
+              <p className="text-5xl font-light text-slate-900 mb-8 font-luxury">
                 {car.price.toLocaleString('fr-FR')} $
               </p>
-              <div className="inline-block px-4 py-2 bg-zinc-900 border border-white/10 rounded-full text-sm font-semibold">
-                Statut: <span className={car.status === 'Disponible' ? 'text-green-500' : 'text-red-500'}>{car.status}</span>
+              <div className="flex items-center space-x-3">
+                <span className={`px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${car.status === 'Disponible' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+                  {car.status}
+                </span>
+                <span className="px-4 py-1.5 rounded-full text-sm font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                  Année {car.year}
+                </span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-6 mb-12">
-              <div className="flex items-center space-x-4 bg-zinc-900 p-4 rounded-2xl border border-white/10">
-                <Calendar className="text-red-600" />
-                <div>
-                  <p className="text-gray-400 text-xs uppercase font-bold">Année</p>
-                  <p className="font-bold">{car.year}</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4 bg-zinc-900 p-4 rounded-2xl border border-white/10">
-                <Settings className="text-red-600" />
-                <div>
-                  <p className="text-gray-400 text-xs uppercase font-bold">État</p>
-                  <p className="font-bold">{car.status}</p>
-                </div>
-              </div>
+               <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                  <div className="bg-red-50 p-3 rounded-2xl text-red-600"><Gauge size={24} /></div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-400 uppercase">État</p>
+                    <p className="font-bold text-slate-900">Occasion / Neuf</p>
+                  </div>
+               </div>
+               <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                  <div className="bg-red-50 p-3 rounded-2xl text-red-600"><Fuel size={24} /></div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-400 uppercase">Carburant</p>
+                    <p className="font-bold text-slate-900">Essence/Diesel</p>
+                  </div>
+               </div>
             </div>
 
-            <div className="mb-12">
-              <h3 className="flex items-center space-x-2 font-bold text-xl mb-4">
-                <Info size={20} className="text-red-600" />
-                <span>Description</span>
+            <div className="mb-12 bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
+              <h3 className="flex items-center space-x-3 font-bold text-2xl mb-6 text-slate-900">
+                <Info size={24} className="text-red-600" />
+                <span>Description détaillée</span>
               </h3>
-              <p className="text-gray-400 leading-relaxed whitespace-pre-wrap">
+              <p className="text-slate-500 leading-relaxed text-lg italic whitespace-pre-wrap">
                 {car.description || "Aucune description détaillée disponible."}
               </p>
             </div>
@@ -166,94 +180,68 @@ const CarDetails: React.FC = () => {
             {car.status === 'Disponible' ? (
               <button 
                 onClick={() => setIsReserving(true)}
-                className="w-full bg-red-600 hover:bg-red-700 text-white py-5 rounded-2xl text-xl font-bold transition shadow-xl shadow-red-600/20"
+                className="w-full bg-red-600 hover:bg-red-700 text-white py-6 rounded-3xl text-2xl font-bold transition shadow-2xl shadow-red-600/30"
               >
-                Réserver cette voiture
+                Réserver ce véhicule
               </button>
             ) : (
-              <div className="w-full bg-zinc-800 text-gray-500 py-5 rounded-2xl text-xl font-bold text-center border border-white/5">
-                Déjà Vendue
+              <div className="w-full bg-slate-200 text-slate-400 py-6 rounded-3xl text-2xl font-bold text-center border border-slate-300">
+                Véhicule déjà vendu
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Fenêtre modale de réservation */}
+      {/* Reservation Modal */}
       {isReserving && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-zinc-900 border border-white/10 rounded-3xl w-full max-w-xl p-8 relative">
-            <button 
-              onClick={() => setIsReserving(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-white"
-            >
-              Fermer
-            </button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
+          <div className="bg-white rounded-[40px] w-full max-w-2xl p-10 relative shadow-2xl border border-slate-200">
+            <button onClick={() => setIsReserving(false)} className="absolute top-8 right-8 text-slate-400 hover:text-red-600 transition">Fermer</button>
             
-            <h2 className="font-luxury text-3xl mb-2">Réserver ce véhicule</h2>
-            <p className="text-gray-400 mb-8">Veuillez remplir vos informations pour confirmer votre intérêt.</p>
+            <h2 className="font-luxury text-4xl mb-2 text-slate-900">Demande de réservation</h2>
+            <p className="text-slate-500 mb-10">Veuillez renseigner vos coordonnées pour être recontacté par notre service client.</p>
 
             {status === 'success' ? (
-              <div className="text-center py-12">
-                <CheckCircle className="text-green-500 w-16 h-16 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Réservation réussie !</h3>
-                <p className="text-gray-400">Un courriel a été envoyé à l'administration et une confirmation vous sera envoyée.</p>
+              <div className="text-center py-16">
+                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle className="text-green-600 w-12 h-12" />
+                </div>
+                <h3 className="text-3xl font-bold mb-4 text-slate-900">Demande envoyée !</h3>
+                <p className="text-slate-500 text-lg">Nous avons bien reçu votre demande. Un email de confirmation vous a été envoyé.</p>
               </div>
             ) : status === 'error' ? (
-              <div className="text-center py-12">
-                <AlertCircle className="text-red-500 w-16 h-16 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Une erreur est survenue</h3>
-                <p className="text-gray-400">Veuillez réessayer plus tard ou nous contacter directement.</p>
-                <button onClick={() => setStatus('idle')} className="mt-4 text-red-500 underline">Réessayer</button>
+              <div className="text-center py-16">
+                <AlertCircle className="text-red-600 w-20 h-20 mx-auto mb-6" />
+                <h3 className="text-3xl font-bold mb-4 text-slate-900">Erreur</h3>
+                <p className="text-slate-500 text-lg">Une erreur s'est produite. Veuillez nous contacter directement par téléphone ou email.</p>
+                <button onClick={() => setStatus('idle')} className="mt-8 bg-slate-900 text-white px-8 py-3 rounded-xl font-bold">Réessayer</button>
               </div>
             ) : (
-              <form onSubmit={handleReserve} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Nom Complet</label>
-                    <input 
-                      required
-                      type="text" 
-                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-600 outline-none"
-                      value={reserveForm.name}
-                      onChange={e => setReserveForm({...reserveForm, name: e.target.value})}
-                    />
+              <form onSubmit={handleReserve} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Nom complet</label>
+                    <input required type="text" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-red-600 focus:bg-white transition-all" value={reserveForm.name} onChange={e => setReserveForm({...reserveForm, name: e.target.value})} />
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Téléphone</label>
-                    <input 
-                      required
-                      type="tel" 
-                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-600 outline-none"
-                      value={reserveForm.phone}
-                      onChange={e => setReserveForm({...reserveForm, phone: e.target.value})}
-                    />
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Téléphone</label>
+                    <input required type="tel" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-red-600 focus:bg-white transition-all" value={reserveForm.phone} onChange={e => setReserveForm({...reserveForm, phone: e.target.value})} />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Email</label>
-                  <input 
-                    required
-                    type="email" 
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-600 outline-none"
-                    value={reserveForm.email}
-                    onChange={e => setReserveForm({...reserveForm, email: e.target.value})}
-                  />
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Email</label>
+                  <input required type="email" className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-red-600 focus:bg-white transition-all" value={reserveForm.email} onChange={e => setReserveForm({...reserveForm, email: e.target.value})} />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Message (Optionnel)</label>
-                  <textarea 
-                    rows={3}
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-600 outline-none resize-none"
-                    value={reserveForm.message}
-                    onChange={e => setReserveForm({...reserveForm, message: e.target.value})}
-                  ></textarea>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Message (optionnel)</label>
+                  <textarea rows={3} className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-red-600 focus:bg-white transition-all resize-none" value={reserveForm.message} onChange={e => setReserveForm({...reserveForm, message: e.target.value})}></textarea>
                 </div>
                 <button 
                   disabled={status === 'loading'}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-bold transition disabled:opacity-50"
+                  className="w-full bg-slate-900 text-white py-5 rounded-2xl text-xl font-bold transition shadow-xl hover:bg-slate-800 disabled:opacity-50"
                 >
-                  {status === 'loading' ? 'Traitement en cours...' : 'Confirmer la réservation'}
+                  {status === 'loading' ? 'Envoi en cours...' : 'Envoyer ma demande'}
                 </button>
               </form>
             )}

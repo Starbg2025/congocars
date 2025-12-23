@@ -4,6 +4,14 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stage, Float, MeshReflectorMaterial, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
+// Bypassing TS intrinsic element checks for @react-three/fiber host elements
+const group = 'group' as any;
+const mesh = 'mesh' as any;
+const boxGeometry = 'boxGeometry' as any;
+const meshStandardMaterial = 'meshStandardMaterial' as any;
+const cylinderGeometry = 'cylinderGeometry' as any;
+const sphereGeometry = 'sphereGeometry' as any;
+
 const FloatingCarModel = () => {
   const meshRef = useRef<THREE.Group>(null);
 

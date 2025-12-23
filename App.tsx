@@ -18,7 +18,6 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -56,15 +55,15 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-red-600 border-opacity-20 border-t-red-600"></div>
       </div>
     );
   }
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900">
         <Navbar user={user} profile={profile} />
         <main className="flex-grow pt-16">
           <Routes>
@@ -77,7 +76,6 @@ const App: React.FC = () => {
               path="/admin/*" 
               element={profile?.role === 'admin' ? <AdminDashboard /> : <Navigate to="/" />} 
             />
-            {/* Fallback for MemoryRouter navigation */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
