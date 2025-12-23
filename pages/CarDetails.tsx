@@ -52,7 +52,7 @@ const CarDetails: React.FC = () => {
 
       if (resError) throw resError;
 
-      // Appel à la fonction API Vercel
+      // Appel à la fonction API Cloudflare (URL relative automatique)
       const response = await fetch("/api/sendReservation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

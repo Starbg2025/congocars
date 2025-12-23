@@ -1,7 +1,7 @@
 {
   "name": "congocar-exclusive",
   "version": "1.0.0",
-  "description": "Plateforme officielle de vente automobile CONGOCAR EXCLUSIVE sur Vercel",
+  "description": "Plateforme officielle de vente automobile CONGOCAR EXCLUSIVE sur Cloudflare Pages",
   "dependencies": {
     "nodemailer": "^6.9.13"
   },
