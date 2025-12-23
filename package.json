@@ -1,8 +1,7 @@
 {
   "name": "congocar-exclusive",
   "version": "1.0.0",
-  "description": "Plateforme officielle de vente et de réservation de voitures CONGOCAR EXCLUSIVE",
-  "main": "index.js",
+  "description": "Plateforme officielle de vente automobile CONGOCAR EXCLUSIVE sur Vercel",
   "dependencies": {
     "nodemailer": "^6.9.13"
   },

@@ -52,7 +52,8 @@ const CarDetails: React.FC = () => {
 
       if (resError) throw resError;
 
-      const response = await fetch("/.netlify/functions/sendReservation", {
+      // Appel à la fonction API Vercel
+      const response = await fetch("/api/sendReservation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -63,6 +64,8 @@ const CarDetails: React.FC = () => {
           message: reserveForm.message
         })
       });
+
+      if (!response.ok) throw new Error("Erreur lors de l'envoi de l'email");
 
       setStatus('success');
       setReserveForm({ name: '', email: '', phone: '', message: '' });

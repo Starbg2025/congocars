@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, ShieldCheck, Award, Clock, ArrowRight } from 'lucide-react';
@@ -32,8 +31,8 @@ const Home: React.FC = () => {
             alt="Luxury Car Background" 
             className="w-full h-full object-cover"
           />
-          {/* Subtle light overlay for readability on white theme */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent"></div>
+          {/* Enhanced overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/50 to-transparent"></div>
         </div>
         
         <div className="relative z-10 w-full max-w-4xl flex flex-col items-start">
